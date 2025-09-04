@@ -52,6 +52,25 @@ jobs:
         run: |
           docker push ${{ env.IMAGE_NAME }}:${{ env.VERSION }}
           docker push ${{ env.IMAGE_NAME }}:latest
+          
+  deploy:
+    needs: docker-build-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login no Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Deploy to Azure Container Apps
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            az containerapp update \
+              --name app-teste-container \
+              --resource-group teste-deploy-container \
+              --image ${{ secrets.IMAGE_NAME }}:${{ env.VERSION }}
+          
            
       
           
