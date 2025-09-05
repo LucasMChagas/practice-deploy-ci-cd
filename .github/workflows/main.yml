@@ -51,7 +51,7 @@ jobs:
       - name: Push imagem para Docker Hub
         run: |
           docker push ${{ env.IMAGE_NAME }}:${{ env.VERSION }}
-          docker push ${{ env.IMAGE_NAME }}:latest
+          docker push 
           
   deploy:
     needs: docker-build-push
@@ -69,7 +69,7 @@ jobs:
             az containerapp update \
               --name teste-container-app \
               --resource-group teste-container-grupo-de-recurso \
-              --image ${{ secrets.IMAGE_NAME }}:latest}
+              --image ${{ env.IMAGE_NAME }}:latest
           
            
       
