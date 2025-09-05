@@ -69,7 +69,7 @@ jobs:
             az containerapp update \
               --name teste-container-app \
               --resource-group teste-container-grupo-de-recurso \
-              --image ${{ env.IMAGE_NAME }}:latest
+              --image ${{ env.IMAGE_NAME }}:${{ env.VERSION }}
           
            
       
