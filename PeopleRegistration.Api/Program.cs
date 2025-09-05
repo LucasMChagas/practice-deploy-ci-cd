@@ -23,6 +23,8 @@ var summaries = new[]
 
 app.MapGet("/", () => "Hello World ok!");
 
+app.MapGet("/people", () => "Novo endpoint para teste do deploy automático");
+
 app.MapGet("/weatherforecast", () =>
 {
     var forecast =  Enumerable.Range(1, 5).Select(index =>

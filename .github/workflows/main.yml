@@ -67,9 +67,9 @@ jobs:
         with:
           inlineScript: |
             az containerapp update \
-              --name app-teste-container \
-              --resource-group teste-deploy-container \
-              --image ${{ secrets.IMAGE_NAME }}:${{ env.VERSION }}
+              --name teste-container-app \
+              --resource-group teste-container-grupo-de-recurso \
+              --image ${{ secrets.IMAGE_NAME }}:latest}
           
            
       
