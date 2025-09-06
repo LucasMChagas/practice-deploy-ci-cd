@@ -50,12 +50,13 @@ jobs:
         uses: azure/cli@v2
         with:
           inlineScript: az acr login --name ${{env.REGISTRY}}
-          
-      - name: Build e Push para ACR
-        run: |
-          docker build -t ${{env.IMAGE_NAME2}}
-          docker tag ${{env.IMAGE_NAME2}} ${{env.REGISTRY}}/${{env.IMAGE_NAME2}}:${{github.sha}}
-          docker push ${{env.REGISTRY}}/${{env.IMAGE_NAME2}}:${{github.sha}}
+      
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{env.REGISTRY}}/${{env.IMAGE_NAME2}}:${{github.sha}}     
           
       - name: Deploy to Azure Container Apps
         uses: azure/cli@v2
