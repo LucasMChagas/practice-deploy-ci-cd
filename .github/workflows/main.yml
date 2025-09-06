@@ -44,19 +44,19 @@ jobs:
       - name: Login no Azure
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-          
-      - name: Login no ACR
-        uses: azure/cli@v2
-        with:
-          inlineScript: az acr login --name ${{env.REGISTRY}}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}     
       
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: ${{env.REGISTRY}}/${{env.IMAGE_NAME2}}:${{github.sha}}     
+          tags: ${{env.REGISTRY}}/${{env.IMAGE_NAME2}}:${{github.sha}}   
+          
+      - name: Login no ACR
+        uses: azure/cli@v2
+        with:
+          inlineScript: az acr login --name ${{env.REGISTRY}}
           
       - name: Deploy to Azure Container Apps
         uses: azure/cli@v2
