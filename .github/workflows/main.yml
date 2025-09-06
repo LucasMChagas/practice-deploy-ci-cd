@@ -9,6 +9,10 @@ on:
 env:
   IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
   VERSION: 1.0.${{ github.run_number }}
+  REGISTRY: testeacr1.azurecr.io     # Nome do seu ACR (ex: meuacr.azurecr.io)
+  IMAGE_NAME2: people-registration          # Nome da imagem no ACR
+  RESOURCE_GROUP: teste-container-grupo-de-recurso
+  CONTAINER_APP: teste-container-app
   
 jobs:
   build:
@@ -27,37 +31,31 @@ jobs:
         run: dotnet restore ./PeopleRegistration.sln
 
       - name: Build solution
-        run: dotnet build ./PeopleRegistration.sln --configuration Release --no-restore
-        
-  docker-build-push:
+        run: dotnet build ./PeopleRegistration.sln --configuration Release --no-restore        
+                
+  build-and-deploy:
     needs: build
     runs-on: ubuntu-latest
-    steps:
+    
+    steps:      
       - name: Checkout código
         uses: actions/checkout@v3
         
-      - name: Login no Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}      
-          
-      - name: Build imagem Docker
-        run: docker build -t ${{ env.IMAGE_NAME }}:${{ env.VERSION }} -t ${{ env.IMAGE_NAME }}:latest .
-          
-      - name: Push imagem para Docker Hub
-        run: |
-          docker push ${{ env.IMAGE_NAME }}:${{ env.VERSION }}
-          docker push ${{ env.IMAGE_NAME }}:latest
-          
-  deploy:
-    needs: docker-build-push
-    runs-on: ubuntu-latest
-    steps:
       - name: Login no Azure
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Login no ACR
+        uses: azure/cli@v2
+        with:
+          inlineScript: az acr login --name ${{env.REGISTRY}}
+          
+      - name: Build e Push para ACR
+        run: |
+          docker build -t ${{env.IMAGE_NAME2}}
+          docker tag ${{env.IMAGE_NAME2}} ${{env.REGISTRY}}/${{env.IMAGE_NAME2}}:${{github.sha}}
+          docker push ${{env.REGISTRY}}/${{env.IMAGE_NAME2}}:${{github.sha}}
           
       - name: Deploy to Azure Container Apps
         uses: azure/cli@v2
@@ -66,7 +64,7 @@ jobs:
             az containerapp update \
               --name teste-container-app \
               --resource-group teste-container-grupo-de-recurso \
-              --image ${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+              --image ${{env.REGISTRY}}/${{env.IMAGE_NAME2}}:${{github.sha}}
           
            
       
