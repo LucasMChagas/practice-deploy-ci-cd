@@ -50,12 +50,21 @@ jobs:
       - name: Login no Azure
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}      
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Extrair credenciais do AZURE_CREDENTIALS
+        run: |
+          echo "${{ secrets.AZURE_CREDENTIALS }}" | jq -r .clientId > clientId.txt
+          echo "${{ secrets.AZURE_CREDENTIALS }}" | jq -r .clientSecret > clientSecret.txt
+          echo "AZURE_CLIENT_ID=$(cat clientId.txt)" >> $GITHUB_ENV
+          echo "AZURE_CLIENT_SECRET=$(cat clientSecret.txt)" >> $GITHUB_ENV
                   
       - name: Login no ACR
-        uses: azure/cli@v2
+        uses: docker/login-action@v2
         with:
-          inlineScript: az acr login --name ${{env.REGISTRY}}
+          registry: ${{env.REGISTRY}}
+          username: ${{ env.AZURE_CLIENT_ID }}
+          password: ${{ env.AZURE_CLIENT_SECRET }}
           
       - name: Build e Push para ACR
         run: |
