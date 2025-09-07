@@ -1,6 +1,7 @@
 name: Deploy Azure Containers
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "main" ]
   pull_request:
