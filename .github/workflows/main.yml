@@ -81,10 +81,13 @@ jobs:
               --name teste-container-app \
               --resource-group teste-container-grupo-de-recurso \
               --image ${{env.REGISTRY}}/${{env.IMAGE_NAME2}}:${{github.sha}}
+              --registry-server ${{env.REGISTRY}} \
+              --registry-username ${{ secrets.ACR_USERNAME }} \
+              --registry-password ${{ secrets.ACR_PASSWORD }}
           
            
       
           
-        
-
-
+            
+            
+            
