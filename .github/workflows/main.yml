@@ -69,7 +69,7 @@ jobs:
           
       - name: Build e Push para ACR
         run: |
-          docker build -t ${{env.IMAGE_NAME2}}
+          docker build -t ${{env.IMAGE_NAME2}} .
           docker tag ${{env.IMAGE_NAME2}} ${{env.REGISTRY}}/${{env.IMAGE_NAME2}}:${{github.sha}}
           docker push ${{env.REGISTRY}}/${{env.IMAGE_NAME2}}:${{github.sha}}
           
